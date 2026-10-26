@@ -1,3 +1,4 @@
+```
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -63,7 +64,13 @@
       margin-bottom: 18px;
     }
 
-    #face { font-size: 76px; margin: 8px; }
+    #face {
+      display: block;
+      width: min(190px, 70%);
+      height: 210px;
+      object-fit: contain;
+      margin: 0 auto 8px;
+    }
     #mood { font-weight: bold; color: var(--main); }
     #clock { font-size: 30px; font-weight: 800; margin: 8px; }
 
@@ -151,7 +158,7 @@
       <section class="card">
         <h2>내 캐릭터</h2>
         <div class="character">
-          <div id="face">🐣</div>
+          <img id="face" src="./character-normal.png" alt="죽지마제발 캐릭터">
           <div id="mood">오늘도 함께 살아가는 중!</div>
           <div id="clock">08:00</div>
           <div id="day">DAY 1</div>
@@ -270,18 +277,20 @@
       $("lightValue").textContent = $("light").value + "%";
       $("activityValue").textContent = $("activity").value + "%";
 
-      if (energy >= 70 && fatigue < 40) {
-        $("face").textContent = "🐣";
-        $("mood").textContent = "컨디션이 좋은 편이에요!";
-      } else if (fatigue >= 75) {
-        $("face").textContent = "🥱";
+      if (fatigue >= 75) {
+        $("face").src = "./character-very-tired.png";
+        $("face").alt = "매우 피곤한 캐릭터";
         $("mood").textContent = "피로가 많이 쌓였어요.";
       } else if (energy < 30) {
-        $("face").textContent = "😴";
+        $("face").src = "./character-sleepy.png";
+        $("face").alt = "졸린 캐릭터";
         $("mood").textContent = "에너지가 부족한 상태예요.";
       } else {
-        $("face").textContent = "🐥";
-        $("mood").textContent = "하루를 보내고 있어요.";
+        $("face").src = "./character-normal.png";
+        $("face").alt = "평소 상태의 캐릭터";
+        $("mood").textContent = energy >= 70 && fatigue < 40
+          ? "컨디션이 좋은 편이에요!"
+          : "하루를 보내고 있어요.";
       }
 
       drawChart();
@@ -396,3 +405,4 @@
   </script>
 </body>
 </html>
+```
