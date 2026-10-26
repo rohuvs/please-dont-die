@@ -213,6 +213,26 @@
         </p>
       </section>
 
+      <section class="card wide" id="sciencePanel">
+        <h2>🧠 생체리듬 분석 (교육용 모델)</h2>
+        <p class="note">수면 항상성(Process S)과 일주기 각성 신호(Process C)를 단순화해 보여줘요. 실제 개인의 생체시계 측정값은 아니에요.</p>
+        <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
+          <div class="stat">
+            <div class="stat-label"><span>🌙 수면 압력 (Process S)</span><strong id="sleepPressureText">20%</strong></div>
+            <div class="bar"><div class="fill" id="sleepPressureBar"></div></div>
+            <p class="note">깨어 있는 동안 쌓이고, 잠자는 동안 감소하는 졸림 압력의 모형</p>
+          </div>
+          <div class="stat">
+            <div class="stat-label"><span>☀️ 일주기 각성 신호 (Process C)</span><strong id="circadianText">50%</strong></div>
+            <div class="bar"><div class="fill" id="circadianBar"></div></div>
+            <p class="note">하루 주기에 따라 오르내리는 각성 신호의 모형</p>
+          </div>
+        </div>
+        <div id="scienceMessage" aria-live="polite" style="padding:13px;background:#edf4d9;border-radius:12px;line-height:1.6;font-size:14px;color:#303b27">
+          생활 조건을 바꾸고 시간을 진행하면 두 과정의 변화를 관찰할 수 있어요.
+        </div>
+      </section>
+
       <section class="card wide">
         <h2>오늘의 생체리듬</h2>
         <canvas id="chart" width="900" height="250"></canvas>
@@ -244,6 +264,8 @@
     let energy = 70;
     let fatigue = 30;
     let mood = 75;
+    let sleepPressure = 20; // Process S: 0-100, simplified educational model
+    let circadianPhase = 4; // clock-hour position of the model's alertness trough
     let history = [energy];
 
     function timeValue(value) {
@@ -264,6 +286,33 @@
       );
     }
 
+    // Two-process sleep model (highly simplified, for learning—not diagnosis).
+    function circadianAlertness(now) {
+      // Lowest around the model's biological night; highest roughly 12 hours later.
+      const angle = 2 * Math.PI * (now - circadianPhase) / 24;
+      return Math.max(0, Math.min(100, 50 + 32 * Math.cos(angle)));
+    }
+
+    function updateSciencePanel(now) {
+      const circadian = circadianAlertness(now);
+      $("sleepPressureText").textContent = Math.round(sleepPressure) + "%";
+      $("circadianText").textContent = Math.round(circadian) + "%";
+      $("sleepPressureBar").style.width = sleepPressure + "%";
+      $("circadianBar").style.width = circadian + "%";
+
+      let note = "";
+      if (sleepPressure > 70 && circadian < 40) {
+        note = "수면 압력이 높고 일주기 각성 신호도 낮아요. 이 모델에서는 졸림이 강해지기 쉬운 조합이에요.";
+      } else if (sleepPressure > 70) {
+        note = "깨어 있는 시간이 길어 수면 압력이 높아요. 일주기 각성 신호가 높더라도 수면 압력은 별도로 쌓일 수 있어요.";
+      } else if (circadian < 30) {
+        note = "일주기 각성 신호가 낮은 시간대로 계산돼요. 충분히 잤는지와 별개로 시간대의 영향이 있을 수 있어요.";
+      } else {
+        note = "현재 모형에서는 수면 압력과 일주기 각성 신호를 함께 봐요. 두 값은 서로 다른 과정을 나타내요.";
+      }
+      $("scienceMessage").textContent = note;
+    }
+
     function render() {
       const h = ((hour % 24) + 24) % 24;
       $("clock").textContent = String(h).padStart(2, "0") + ":00";
@@ -279,6 +328,7 @@
 
       $("lightValue").textContent = $("light").value + "%";
       $("activityValue").textContent = $("activity").value + "%";
+      updateSciencePanel(h);
 
       if (fatigue >= 75) {
         $("face").src = TIRED_IMAGE_DATA;
@@ -309,12 +359,23 @@
       if (isAsleep) {
         energy += 8;
         fatigue -= 12;
+        sleepPressure -= 8; // Process S falls during sleep
       } else {
         energy -= 3 + activity * 3;
         fatigue += 4 + activity * 2;
+        sleepPressure += 4.5; // Process S builds during wakefulness
+      }
+      sleepPressure = Math.max(0, Math.min(100, sleepPressure));
+
+      // Light's phase effect is simplified: morning light advances; late-evening light delays.
+      // This is illustrative only; real phase response depends on internal circadian timing.
+      if (!isAsleep && light > 0) {
+        if (now >= 6 && now < 10) circadianPhase -= 0.025 * light;
+        else if (now >= 20 && now < 23) circadianPhase += 0.025 * light;
+        circadianPhase = ((circadianPhase % 24) + 24) % 24;
       }
 
-      // 빛 노출과 식사 시간은 이 교육용 모델에서 단순화해 반영
+      // Daylight may also give a small modeled alertness/energy benefit.
       if (!isAsleep && now >= 6 && now < 11) {
         energy += light * 4;
       }
@@ -391,6 +452,8 @@
       energy = 70;
       fatigue = 30;
       mood = 75;
+      sleepPressure = 20;
+      circadianPhase = 4;
       history = [energy];
       $("message").textContent =
         "하루를 초기화했어요. 생활 습관을 조절하고 다시 관찰해 보세요.";
