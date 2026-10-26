@@ -7,12 +7,12 @@
   <title>죽지마제발 | 생체리듬 시뮬레이터</title>
   <style>
     :root {
-      --bg: #f5f3ff;
-      --card: #ffffff;
-      --main: #7866dc;
-      --text: #28263b;
-      --muted: #77758c;
-      --border: #e9e5f6;
+      --bg: #f3f7df;
+      --card: #fffef7;
+      --main: #789b55;
+      --text: #303b27;
+      --muted: #7c846c;
+      --border: #dce6c5;
     }
 
     * { box-sizing: border-box; }
@@ -27,7 +27,7 @@
     header {
       padding: 28px 20px;
       text-align: center;
-      background: linear-gradient(135deg, #7866dc, #a99aef);
+      background: linear-gradient(135deg, #91b86b, #c4d99a);
       color: white;
     }
 
@@ -58,7 +58,7 @@
 
     .character {
       text-align: center;
-      background: #f0edff;
+      background: #edf4d9;
       border-radius: 16px;
       padding: 20px;
       margin-bottom: 18px;
@@ -86,7 +86,7 @@
     .bar {
       height: 11px;
       border-radius: 20px;
-      background: #eeeaf8;
+      background: #e7edda;
       overflow: hidden;
     }
 
@@ -121,7 +121,7 @@
     }
 
     .primary { background: var(--main); color: white; }
-    .secondary { background: #efecfb; color: #51429e; }
+    .secondary { background: #e8efcf; color: #526b3b; }
 
     .buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
     .buttons button { flex: 1; }
@@ -131,7 +131,7 @@
 
     #message {
       padding: 13px;
-      background: #f5f3ff;
+      background: #f3f7df;
       border-radius: 12px;
       line-height: 1.6;
       font-size: 14px;
@@ -356,8 +356,8 @@
       const h = canvas.height;
       ctx.clearRect(0, 0, w, h);
 
-      ctx.strokeStyle = "#e9e5f6";
-      ctx.fillStyle = "#77758c";
+      ctx.strokeStyle = "#dce6c5";
+      ctx.fillStyle = "#7c846c";
       ctx.font = "14px Arial";
 
       [0, 25, 50, 75, 100].forEach(v => {
@@ -369,7 +369,7 @@
         ctx.fillText(v + "%", 3, y + 5);
       });
 
-      ctx.strokeStyle = "#7866dc";
+      ctx.strokeStyle = "#789b55";
       ctx.lineWidth = 3;
       ctx.beginPath();
 
@@ -381,7 +381,7 @@
       });
 
       ctx.stroke();
-      ctx.fillStyle = "#77758c";
+      ctx.fillStyle = "#7c846c";
       ctx.fillText("최근 시간의 에너지 변화", 45, 18);
     }
 
